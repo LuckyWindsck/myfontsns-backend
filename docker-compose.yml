@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  postgresql:
+    image: postgres:${POSTGRESQL_VERSION}
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
+      - TZ
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --locale=ja_JP.UTF-8
+    volumes:
+      - "./database/postgresql/data/:/var/lib/postgresql/data/"
+    ports:
+      - "5432:5432"
+    restart: always

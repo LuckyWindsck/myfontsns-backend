@@ -1,3 +1,8 @@
 node_modules/
 
 dist/
+
+.env
+
+database/postgresql/*
+!database/postgresql/.gitkeep
