@@ -1,0 +1,14 @@
+{
+  "name": "myfontsns-backend",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "repository": "https://github.com/LuckyWindsck/myfontsns-backend.git",
+  "author": "LuckyWind_sck <luckywindsck@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ."
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
