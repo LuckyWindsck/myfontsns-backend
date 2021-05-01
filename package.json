@@ -6,7 +6,8 @@
   "author": "LuckyWind_sck <luckywindsck@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node-dev --transpile-only .",
+    "start": "node dist/app.js",
+    "dev": "ts-node-dev --transpile-only .",
     "build": "tsc",
     "lint": "eslint --ext=ts src",
     "lint:fix": "yarn lint --fix",
