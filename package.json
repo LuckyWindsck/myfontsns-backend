@@ -7,8 +7,9 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "ts-node-dev --transpile-only .",
+    "dev": "ts-node-dev --respawn --transpile-only .",
     "build": "tsc",
+    "build:migrations": "tsc --outDir ./migrations/compiled ./migrations/*.ts",
     "lint": "eslint --ext=ts src",
     "lint:fix": "yarn lint --fix",
     "test": "jest",

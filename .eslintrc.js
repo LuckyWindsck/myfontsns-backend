@@ -19,24 +19,22 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: [
-          '.ts',
-        ],
+        extensions: ['.ts'],
       },
     },
   },
   rules: {
     'import/extensions': [
       'error',
-      {
-        ts: 'ignorePackages',
-      },
+      { ts: 'ignorePackages' },
     ],
     'no-console': [
       'warn',
-      {
-        allow: ['log', 'error'],
-      },
+      { allow: ['log', 'error'] },
+    ],
+    'no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_' },
     ],
   },
 };
