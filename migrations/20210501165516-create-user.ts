@@ -1,5 +1,8 @@
+import * as SequelizeDefault from 'sequelize';
+import { QueryInterface } from 'sequelize';
+
 export default {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface: QueryInterface, Sequelize: typeof SequelizeDefault) => {
     await queryInterface.createTable('Users', {
       id: {
         allowNull: false,
@@ -11,7 +14,7 @@ export default {
         type: Sequelize.STRING,
       },
       screenName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       email: {
         type: Sequelize.STRING,
@@ -29,7 +32,7 @@ export default {
       },
     });
   },
-  down: async (queryInterface, _Sequelize) => {
+  down: async (queryInterface: QueryInterface, _Sequelize: typeof SequelizeDefault) => {
     await queryInterface.dropTable('Users');
   },
 };
