@@ -1,6 +1,11 @@
+/* eslint-disable key-spacing, max-len, no-multi-spaces */
 const path = require('path');
 
 module.exports = {
-  'config': path.resolve('config', 'config.js'),
-  'migrations-path': path.resolve('migrations', 'compiled')
+  // env: 'development',                                      /* The environment to run the command in */
+  config:            path.resolve('config', 'config.js'),     /* The path to the config file */
+  'migrations-path': path.resolve('migrations', 'compiled'),  /* The path to the migrations folder */
+  // 'seeders-path':    path.resolve('seeders'),              /* The path to the seeders folder */
+  // 'models-path':     path.resolve('models'),               /* The path to the models folder */
+  // debug: false,                                            /* When available show various debug information */
 };
