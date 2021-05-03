@@ -8,6 +8,12 @@ const {
   POSTGRES_PASSWORD: password,
 } = process.env;
 
+if (!database || !username || !password) {
+  console.error('Please make sure you filled all `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` in .env');
+
+  process.exit(1);
+}
+
 const dialect = 'postgres';
 
 module.exports = {
