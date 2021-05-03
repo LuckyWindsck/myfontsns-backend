@@ -2,16 +2,8 @@ import request from 'supertest';
 import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
-import { User } from '../models';
-import { app, sequelize } from './app';
-
-describe('Test the root path', () => {
-  test('It should response the GET method', async () => {
-    const response = await request(app).get('/');
-
-    expect(response.status).toBe(200);
-  });
-});
+import { User } from '../src/models';
+import { app, sequelize } from '../src/app';
 
 describe('Test /users', () => {
   beforeAll(async () => {

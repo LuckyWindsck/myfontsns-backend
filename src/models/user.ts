@@ -2,7 +2,7 @@ import {
   Model, Sequelize, DataTypes, Optional,
 } from 'sequelize';
 
-import { ModelAttributes } from './model';
+import { ModelAttributes } from '../lib/model';
 
 interface UserAttributes extends ModelAttributes {
   name: string;
