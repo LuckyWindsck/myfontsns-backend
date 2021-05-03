@@ -1,5 +1,6 @@
 import request from 'supertest';
 import faker from 'faker';
+import { StatusCodes } from 'http-status-codes';
 
 import { User } from '../models';
 import { app, sequelize } from './app';
@@ -35,7 +36,7 @@ describe('Test /users', () => {
     const user = await User.findOne({ where: fakeUser });
 
     expect(user).not.toBeNull();
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(StatusCodes.CREATED);
     expect(response.body).not.toBe('');
   });
 });

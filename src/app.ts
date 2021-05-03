@@ -1,4 +1,6 @@
 import express from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 import { sequelize, User } from '../models';
 
 const app = express();
@@ -13,7 +15,7 @@ app.get('/', (req, res) => {
 app.post('/users', async (req, res) => {
   const user = await User.create(req.body);
 
-  res.status(201).send(user);
+  res.status(StatusCodes.CREATED).send(user);
 });
 
 export { app, sequelize };
