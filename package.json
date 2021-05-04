@@ -13,6 +13,7 @@
     "lint": "eslint --ext=ts src",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
+    "console:db": "node --experimental-repl-await --require ts-node/register/transpile-only ./bin/console-db.ts",
     "prepare": "husky install",
     "postinstall": "yarn build"
   },
