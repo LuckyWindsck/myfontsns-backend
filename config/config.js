@@ -6,6 +6,7 @@ const {
   POSTGRES_DB: database,
   POSTGRES_USER: username,
   POSTGRES_PASSWORD: password,
+  LOGGING,
 } = process.env;
 
 if (!database || !username || !password) {
@@ -16,23 +17,28 @@ if (!database || !username || !password) {
 
 const dialect = 'postgres';
 
+const logging = LOGGING && !['false', 'off', 'no'].includes(LOGGING.toLowerCase());
+
 module.exports = {
   development: {
     database,
     username,
     password,
     dialect,
+    logging,
   },
   test: {
     database,
     username,
     password,
     dialect,
+    logging,
   },
   production: {
     database,
     username,
     password,
     dialect,
+    logging,
   },
 };
