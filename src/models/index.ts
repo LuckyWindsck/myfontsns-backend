@@ -4,10 +4,6 @@ import User from './userModel';
 User.initialize(db);
 
 export {
-  User,
-};
-
-// for db-console import, only models here
-export default {
+  // eslint-disable-next-line import/prefer-default-export
   User,
 };

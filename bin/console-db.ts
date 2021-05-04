@@ -5,13 +5,13 @@
 
 import repl from 'repl';
 import db from '../src/lib/db';
-import models from '../src/models';
+import '../src/models';
 
 const dbConsole = repl.start('> ');
 
 dbConsole.context.db = db;
-dbConsole.context.models = models;
+dbConsole.context.models = db.models;
 
-Object.entries(models).forEach(([modelName, model]) => {
+Object.entries(db.models).forEach(([modelName, model]) => {
   dbConsole.context[modelName] = model;
 });
