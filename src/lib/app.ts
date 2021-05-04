@@ -1,7 +1,6 @@
 import express from 'express';
 
-import { rootRouter, userRouter } from './routes';
-import { sequelize } from './models';
+import { rootRouter, userRouter } from '../routes';
 
 const app = express();
 
@@ -11,4 +10,4 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 app.use('/', rootRouter);
 app.use('/users', userRouter);
 
-export { app, sequelize };
+export default app;

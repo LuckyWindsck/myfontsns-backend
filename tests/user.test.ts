@@ -3,7 +3,8 @@ import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
 import { User } from '../src/models';
-import { app, sequelize } from '../src/app';
+import app from '../src/lib/app';
+import db from '../src/lib/db';
 
 const buildFakeUser = () => ({
   name: faker.random.alphaNumeric(15),
@@ -17,7 +18,7 @@ const normalize = (obj) => JSON.parse(JSON.stringify(obj));
 
 describe('Test /users', () => {
   beforeAll(async () => {
-    await sequelize.sync({ force: true });
+    await db.sync({ force: true });
 
     // Seeding
     const fakeUserCount = 25;
@@ -27,8 +28,8 @@ describe('Test /users', () => {
   });
 
   afterAll(async () => {
-    await sequelize.sync({ force: true });
-    await sequelize.close();
+    await db.sync({ force: true });
+    await db.close();
   });
 
   test('It should display all users', async () => {
@@ -63,7 +64,7 @@ describe('Test /users', () => {
   });
 
   test('It should be able to display a user', async () => {
-    const user = await User.findOne({ order: sequelize.random() });
+    const user = await User.findOne({ order: db.random() });
     const { status, body: responseUser } = await request(app).get(`/users/${user.id}`);
 
     /* Response */
@@ -75,7 +76,7 @@ describe('Test /users', () => {
 
   test('It should be able to update a user', async () => {
     const fakeUser = buildFakeUser();
-    const user = await User.findOne({ order: sequelize.random() });
+    const user = await User.findOne({ order: db.random() });
     const { status, body: responseUser } = await request(app).put(`/users/${user.id}`).send(fakeUser);
     const updatedUser = await User.findByPk(user.id);
 
@@ -91,7 +92,7 @@ describe('Test /users', () => {
   });
 
   test('It should be able to delete a user', async () => {
-    const user = await User.findOne({ order: sequelize.random() });
+    const user = await User.findOne({ order: db.random() });
     const { status, body: responseUser } = await request(app).delete(`/users/${user.id}`);
     const deletedUser = await User.findByPk(user.id);
 
