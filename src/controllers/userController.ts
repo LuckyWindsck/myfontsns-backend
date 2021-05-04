@@ -6,6 +6,7 @@ import {
 import { StatusCodes } from 'http-status-codes';
 import faker from 'faker';
 
+import db from '../lib/db';
 import { Controller, resourceNotFound } from '../lib/controller';
 import { errorFormatter, validationError } from '../lib/express-validator/error-formatter';
 import {
@@ -69,24 +70,32 @@ const UserController: Controller = class UserController {
       await runAllValidations(validations)(req);
       validationResult(req).formatWith(errorFormatter).throw();
     } catch (errors) {
-      const error = validationError(errors);
-      res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(error));
+      const errorResponse = validationError(errors);
+
+      res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
       return;
     }
 
     const validatedUserData = matchedData(req);
     const { screenName, email, password } = validatedUserData;
 
-    const user = await User.create({
-      name: faker.random.alphaNumeric(15),
-      screenName,
-      email,
-      password,
-    });
+    try {
+      const user = await db.transaction((t) => (
+        User.create({
+          name: faker.random.alphaNumeric(15),
+          screenName,
+          email,
+          password,
+        }, { transaction: t })
+      ));
+      const data = user.convert();
 
-    const data = user.convert();
+      res.status(StatusCodes.CREATED).send(docWithData(data));
+    } catch (error) {
+      const errorResponse = validationError(error);
 
-    res.status(StatusCodes.CREATED).send(docWithData(data));
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+    }
   }
 
   // display a specific user
@@ -155,20 +164,26 @@ const UserController: Controller = class UserController {
       await runAllValidations(validations)(req);
       validationResult(req).formatWith(errorFormatter).throw();
     } catch (errors) {
-      const error = validationError(errors);
-      res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(error));
+      const errorResponse = validationError(errors);
+
+      res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
       return;
     }
 
     const validatedUserData = matchedData(req);
 
-    await user!.update(validatedUserData);
+    try {
+      await db.transaction((t) => user!.update(validatedUserData, { transaction: t }));
+      // Should refresh  user instance is created before updated, and sequelize
+      // might set with a different value according to setters.
+      const data = (await user!.reload()).convert();
 
-    // Should refresh  user instance is created before updated, and sequelize
-    // might set with a different value according to setters.
-    const data = (await user!.reload()).convert();
+      res.send(docWithData(data));
+    } catch (error) {
+      const errorResponse = validationError(error);
 
-    res.send(docWithData(data));
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+    }
   }
 
   // delete a specific user
@@ -181,11 +196,16 @@ const UserController: Controller = class UserController {
       return;
     }
 
-    await user!.destroy();
+    try {
+      await db.transaction((t) => user!.destroy({ transaction: t }));
+      const data = user!.convert();
 
-    const data = user!.convert();
+      res.send(docWithData(data));
+    } catch (error) {
+      const errorResponse = validationError(error);
 
-    res.send(docWithData(data));
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+    }
   }
 };
 

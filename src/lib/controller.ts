@@ -11,10 +11,20 @@ export interface Controller {
 }
 
 export function resourceNotFound() {
-  const error: JSONAPI.ErrorObject = {
+  const errorResponse: JSONAPI.ErrorObject = {
     title: 'Resource not found',
     status: ReasonPhrases.NOT_FOUND,
   };
 
-  return error;
+  return errorResponse;
+}
+
+export function internalServerError(error: any) {
+  const errorResponse: JSONAPI.ErrorObject = {
+    title: 'Internal Server Error',
+    status: ReasonPhrases.NOT_FOUND,
+    meta: error,
+  };
+
+  return errorResponse;
 }

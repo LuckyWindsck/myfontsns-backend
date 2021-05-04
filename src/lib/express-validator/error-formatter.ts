@@ -11,13 +11,13 @@ const errorFormatter: ErrorFormatter = ({
 }) => msg;
 
 const validationError = (errors: Result) => {
-  const error: JSONAPI.ErrorObject = {
+  const errorResponse: JSONAPI.ErrorObject = {
     status: ReasonPhrases.UNPROCESSABLE_ENTITY,
     title: 'ValidationError',
     meta: errors.mapped ? errors.mapped() : errors,
   };
 
-  return error;
+  return errorResponse;
 };
 
 export {
