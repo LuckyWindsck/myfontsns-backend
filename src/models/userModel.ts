@@ -2,6 +2,9 @@ import { Sequelize, Optional, DataTypes } from 'sequelize';
 
 import { ModelAttributes, AppModel } from '../lib/model';
 
+// TODO: Do we really need strict-typing-for-attributes?
+// https://sequelize.org/master/manual/typescript.html#usage-without-strict-types-for-attributes
+
 interface UserAttributes extends ModelAttributes {
   name: string;
   screenName: string;
