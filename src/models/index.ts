@@ -1,7 +1,7 @@
 import db from '../lib/db';
-import UserInit from './user';
+import User from './userModel';
 
-const User = UserInit(db);
+User.initialize(db);
 
 export {
   User,
