@@ -26,17 +26,23 @@ module.exports = {
   rules: {
     indent: 'off',
     '@typescript-eslint/indent': ['error', 2],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        ignoreRestSiblings: true,
+      },
+    ],
     'import/extensions': [
       'error',
       { ts: 'ignorePackages' },
     ],
+    'newline-per-chained-call': 'off',
     'no-console': [
       'warn',
       { allow: ['log', 'error'] },
     ],
-    'no-unused-vars': [
-      'error',
-      { argsIgnorePattern: '^_' },
-    ],
+    '@typescript-eslint/type-annotation-spacing': 'error',
   },
 };

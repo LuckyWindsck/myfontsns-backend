@@ -1,8 +1,6 @@
-import {
-  Model, Sequelize, DataTypes, Optional,
-} from 'sequelize';
+import { Sequelize, Optional, DataTypes } from 'sequelize';
 
-import { ModelAttributes } from '../lib/model';
+import { ModelAttributes, AppModel } from '../lib/model';
 
 interface UserAttributes extends ModelAttributes {
   name: string;
@@ -14,10 +12,7 @@ interface UserAttributes extends ModelAttributes {
 // Some attributes are optional in `User.build` and `User.create` calls
 interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt'> { }
 
-// class User extends Model {
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public id!: number;
-
+class User extends AppModel<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public name!: string;
 
   public screenName!: string;
@@ -25,10 +20,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public email!: string;
 
   public password!: string;
-
-  public readonly createdAt!: Date;
-
-  public readonly updatedAt!: Date;
 
   static initialize(sequelize: Sequelize) {
     User.init(
