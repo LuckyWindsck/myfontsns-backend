@@ -44,5 +44,6 @@ module.exports = {
       { allow: ['log', 'error'] },
     ],
     '@typescript-eslint/type-annotation-spacing': 'error',
+    '@typescript-eslint/sort-type-union-intersection-members': 'error',
   },
 };

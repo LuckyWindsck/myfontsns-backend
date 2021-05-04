@@ -34,12 +34,13 @@ import { docWithData, docWithErrors } from '../lib/json-api/response';
 import { User } from '../models';
 
 const getUserById = async (id: string) => {
-  const user = await User.findByPk(id);
-  let notFound;
+  let result: ErrorObject | User | null = await User.findByPk(id);
 
-  if (user === null) notFound = resourceNotFound();
+  if (result === null) {
+    result = resourceNotFound();
+  }
 
-  return { user, notFound };
+  return result;
 };
 
 const UserController: Controller = class UserController {
@@ -54,8 +55,8 @@ const UserController: Controller = class UserController {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
 
-    const data = users.map((user) => user.convert());
-    return res.send(docWithData(data));
+    const dataResponse = users.map((user) => user.convert());
+    return res.send(docWithData(dataResponse));
   }
 
   // create a new user
@@ -91,6 +92,7 @@ const UserController: Controller = class UserController {
 
     const validatedUserData = matchedData(req);
     const { screenName, email, password } = validatedUserData;
+
     let user;
 
     try {
@@ -107,28 +109,29 @@ const UserController: Controller = class UserController {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
 
-    const data = user.convert();
-    return res.status(StatusCodes.CREATED).send(docWithData(data));
+    const dataResponse = user.convert();
+    return res.status(StatusCodes.CREATED).send(docWithData(dataResponse));
   }
 
   // display a specific user
   static show = async (req, res) => {
-    let user: User | null;
-    let notFound: ErrorObject | undefined;
+    let result: ErrorObject | User;
 
     try {
-      ({ user, notFound } = await getUserById(req.params.id));
+      result = await getUserById(req.params.id);
     } catch (error) {
       const errorResponse = internalServerError(error);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
 
-    if (notFound) {
-      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
+    if (!(result instanceof User)) {
+      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(result));
     }
 
-    const data = user!.convert();
-    return res.send(docWithData(data));
+    const user = result;
+
+    const dataResponse = user.convert();
+    return res.send(docWithData(dataResponse));
   }
 
   // update a specific user
@@ -136,19 +139,21 @@ const UserController: Controller = class UserController {
     const useValidators = useValidatorsSchema(req);
     const useSanitizers = useSanitizersSchema(req);
 
-    let user: User | null;
-    let notFound: ErrorObject | undefined;
+    let result: ErrorObject | User;
 
     try {
-      ({ user, notFound } = await getUserById(req.params.id));
+      result = await getUserById(req.params.id);
     } catch (error) {
       const errorResponse = internalServerError(error);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
 
-    if (notFound) {
-      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
+    if (!(result instanceof User)) {
+      const errorResponse = result;
+      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(errorResponse));
     }
+
+    const user = result;
 
     const validations = [
       body('name')
@@ -195,7 +200,7 @@ const UserController: Controller = class UserController {
     const validatedUserData = matchedData(req);
 
     try {
-      await db.transaction((t) => user!.update(validatedUserData, { transaction: t }));
+      await db.transaction((t) => user.update(validatedUserData, { transaction: t }));
     } catch (error) {
       const errorResponse = internalServerError(error);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
@@ -203,27 +208,37 @@ const UserController: Controller = class UserController {
 
     // Should refresh  user instance is created before updated, and sequelize
     // might set with a different value according to setters.
-    const data = (await user!.reload()).convert();
-    return res.send(docWithData(data));
+    const dataResponse = (await user.reload()).convert();
+    return res.send(docWithData(dataResponse));
   }
 
   // delete a specific user
   static destroy = async (req, res) => {
-    const { user, notFound } = await getUserById(req.params.id);
-
-    if (notFound) {
-      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
-    }
+    let result: ErrorObject | User;
 
     try {
-      await db.transaction((t) => user!.destroy({ transaction: t }));
+      result = await getUserById(req.params.id);
     } catch (error) {
       const errorResponse = internalServerError(error);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
 
-    const data = user!.convert();
-    return res.send(docWithData(data));
+    if (!(result instanceof User)) {
+      const errorResponse = result;
+      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(errorResponse));
+    }
+
+    const user = result;
+
+    try {
+      await db.transaction((t) => user.destroy({ transaction: t }));
+    } catch (error) {
+      const errorResponse = internalServerError(error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+    }
+
+    const dataResponse = user.convert();
+    return res.send(docWithData(dataResponse));
   }
 };
 
