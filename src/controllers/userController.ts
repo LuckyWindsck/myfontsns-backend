@@ -6,9 +6,17 @@ import {
 import { StatusCodes } from 'http-status-codes';
 import faker from 'faker';
 
+import { ErrorObject } from 'jsonapi-typescript';
 import db from '../lib/db';
-import { Controller, resourceNotFound } from '../lib/controller';
-import { errorFormatter, validationError } from '../lib/express-validator/error-formatter';
+import {
+  Controller,
+  resourceNotFound,
+  internalServerError,
+} from '../lib/controller';
+import {
+  errorFormatter,
+  validationError,
+} from '../lib/express-validator/error-formatter';
 import {
   shouldExist,
   shouldNotExist,
@@ -37,10 +45,17 @@ const getUserById = async (id: string) => {
 const UserController: Controller = class UserController {
   // display a list of all users
   static index = async (req, res) => {
-    const users = await User.findAll();
-    const data = users.map((user) => user.convert());
+    let users;
 
-    res.send(docWithData(data));
+    try {
+      users = await User.findAll();
+    } catch (error) {
+      const errorResponse = internalServerError(error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+    }
+
+    const data = users.map((user) => user.convert());
+    return res.send(docWithData(data));
   }
 
   // create a new user
@@ -71,16 +86,15 @@ const UserController: Controller = class UserController {
       validationResult(req).formatWith(errorFormatter).throw();
     } catch (errors) {
       const errorResponse = validationError(errors);
-
-      res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
-      return;
+      return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
     }
 
     const validatedUserData = matchedData(req);
     const { screenName, email, password } = validatedUserData;
+    let user;
 
     try {
-      const user = await db.transaction((t) => (
+      user = await db.transaction((t) => (
         User.create({
           name: faker.random.alphaNumeric(15),
           screenName,
@@ -88,29 +102,33 @@ const UserController: Controller = class UserController {
           password,
         }, { transaction: t })
       ));
-      const data = user.convert();
-
-      res.status(StatusCodes.CREATED).send(docWithData(data));
     } catch (error) {
-      const errorResponse = validationError(error);
-
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+      const errorResponse = internalServerError(error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
+
+    const data = user.convert();
+    return res.status(StatusCodes.CREATED).send(docWithData(data));
   }
 
   // display a specific user
   static show = async (req, res) => {
-    const { user, notFound } = await getUserById(req.params.id);
+    let user: User | null;
+    let notFound: ErrorObject | undefined;
+
+    try {
+      ({ user, notFound } = await getUserById(req.params.id));
+    } catch (error) {
+      const errorResponse = internalServerError(error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+    }
 
     if (notFound) {
-      res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
-
-      return;
+      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
     }
 
     const data = user!.convert();
-
-    res.send(docWithData(data));
+    return res.send(docWithData(data));
   }
 
   // update a specific user
@@ -118,12 +136,18 @@ const UserController: Controller = class UserController {
     const useValidators = useValidatorsSchema(req);
     const useSanitizers = useSanitizersSchema(req);
 
-    const { user, notFound } = await getUserById(req.params.id);
+    let user: User | null;
+    let notFound: ErrorObject | undefined;
+
+    try {
+      ({ user, notFound } = await getUserById(req.params.id));
+    } catch (error) {
+      const errorResponse = internalServerError(error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+    }
 
     if (notFound) {
-      res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
-
-      return;
+      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
     }
 
     const validations = [
@@ -165,25 +189,22 @@ const UserController: Controller = class UserController {
       validationResult(req).formatWith(errorFormatter).throw();
     } catch (errors) {
       const errorResponse = validationError(errors);
-
-      res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
-      return;
+      return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
     }
 
     const validatedUserData = matchedData(req);
 
     try {
       await db.transaction((t) => user!.update(validatedUserData, { transaction: t }));
-      // Should refresh  user instance is created before updated, and sequelize
-      // might set with a different value according to setters.
-      const data = (await user!.reload()).convert();
-
-      res.send(docWithData(data));
     } catch (error) {
-      const errorResponse = validationError(error);
-
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+      const errorResponse = internalServerError(error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
+
+    // Should refresh  user instance is created before updated, and sequelize
+    // might set with a different value according to setters.
+    const data = (await user!.reload()).convert();
+    return res.send(docWithData(data));
   }
 
   // delete a specific user
@@ -191,21 +212,18 @@ const UserController: Controller = class UserController {
     const { user, notFound } = await getUserById(req.params.id);
 
     if (notFound) {
-      res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
-
-      return;
+      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(notFound));
     }
 
     try {
       await db.transaction((t) => user!.destroy({ transaction: t }));
-      const data = user!.convert();
-
-      res.send(docWithData(data));
     } catch (error) {
-      const errorResponse = validationError(error);
-
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+      const errorResponse = internalServerError(error);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
     }
+
+    const data = user!.convert();
+    return res.send(docWithData(data));
   }
 };
 
