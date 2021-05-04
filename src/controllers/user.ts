@@ -6,7 +6,9 @@ import { User } from '../models';
 const UserController: Controller = class UserController {
   // display a list of all users
   static index = async (req, res) => {
-    res.send();
+    const users = await User.findAll();
+
+    res.send(users);
   }
 
   // create a new user
@@ -18,17 +20,27 @@ const UserController: Controller = class UserController {
 
   // display a specific user
   static show = async (req, res) => {
-    res.send();
+    const user = await User.findByPk(req.params.id);
+
+    res.send(user);
   }
 
   // update a specific user
   static update = async (req, res) => {
-    res.send();
+    const user = await User.findByPk(req.params.id);
+
+    await user?.update(req.body);
+
+    res.send(user);
   }
 
   // delete a specific user
   static destroy = async (req, res) => {
-    res.send();
+    const user = await User.findByPk(req.params.id);
+
+    await user?.destroy();
+
+    res.send(user);
   }
 };
 
