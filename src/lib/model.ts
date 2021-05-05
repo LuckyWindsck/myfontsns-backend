@@ -1,13 +1,15 @@
 import type * as JSONAPI from 'jsonapi-typescript';
 import { Model } from 'sequelize';
 
+import { ResourceNotFoundError } from '../util/errors';
+
 export interface ModelAttributes {
   id: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export abstract class AppModel<
+export class AppModel<
   TModelAttributes extends ModelAttributes,
   TCreationAttributes extends {} = TModelAttributes
 > extends Model<TModelAttributes, TCreationAttributes>
@@ -37,5 +39,13 @@ export abstract class AppModel<
     };
 
     return primaryData;
+  }
+
+  static async getById(id: string) {
+    const result = await this.findByPk(id);
+
+    if (result === null) throw new ResourceNotFoundError();
+
+    return result;
   }
 }

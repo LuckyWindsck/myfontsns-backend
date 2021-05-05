@@ -1,6 +1,8 @@
 import type { Request } from 'express';
 import type { ErrorFormatter, Schema, ValidationChain } from 'express-validator';
-import { checkSchema } from 'express-validator';
+import { checkSchema, validationResult } from 'express-validator';
+
+import { ValidationError } from '../errors';
 
 const checkBodySchema = (schema: Schema) => checkSchema(schema, ['body']);
 
@@ -16,10 +18,6 @@ const useSanitizersSchema = (req: Request) => (schema: Schema) => async () => {
   return result.context.getData()[0].value;
 };
 
-const runAllValidations = (validations: ValidationChain[]) => (req: Request) => (
-  Promise.all(validations.map((validation) => validation.run(req)))
-);
-
 const errorFormatter: ErrorFormatter = ({
   location: _location,
   msg,
@@ -28,10 +26,19 @@ const errorFormatter: ErrorFormatter = ({
   nestedErrors: _nestedErrors,
 }) => msg;
 
+const runAllValidations = async (validations: ValidationChain[], req: Request) => {
+  try {
+    await Promise.all(validations.map((validation) => validation.run(req)));
+    validationResult(req).formatWith(errorFormatter).throw();
+  } catch (errors) {
+    throw new ValidationError(errors);
+  }
+};
+
 export {
   checkBodySchema,
   useValidatorsSchema,
   useSanitizersSchema,
-  runAllValidations,
   errorFormatter,
+  runAllValidations,
 };

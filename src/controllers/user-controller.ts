@@ -1,15 +1,13 @@
-import { body, matchedData, validationResult } from 'express-validator';
+import { body, matchedData } from 'express-validator';
 // TODO: remove faker
 import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
-import type { ErrorObject } from 'jsonapi-typescript';
 
 import type { Controller } from '../lib/controller';
 import db from '../lib/db';
 import { User } from '../models';
 import {
   checkBodySchema,
-  errorFormatter,
   runAllValidations,
   useSanitizersSchema,
   useValidatorsSchema,
@@ -21,73 +19,50 @@ import {
   shouldNotBeEmpty,
   shouldNotExist,
 } from '../util/express-validator/custom-param-schemas';
-import { internalServerError, resourceNotFound, validationError } from '../util/express/responses';
-import { docWithData, docWithErrors } from '../util/json-api';
-
-const getUserById = async (id: string) => {
-  let result: ErrorObject | User | null = await User.findByPk(id);
-
-  if (result === null) {
-    result = resourceNotFound();
-  }
-
-  return result;
-};
+import { docWithData } from '../util/json-api';
 
 const UserController: Controller = class UserController {
   // display a list of all users
-  static index = async (req, res) => {
-    let users;
-
+  static index = async (req, res, next) => {
     try {
-      users = await User.findAll();
-    } catch (error) {
-      const errorResponse = internalServerError(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
-    }
+      const users = await User.findAll();
+      const dataResponse = users.map((user) => user.convert());
 
-    const dataResponse = users.map((user) => user.convert());
-    return res.send(docWithData(dataResponse));
+      res.send(docWithData(dataResponse));
+    } catch (error) {
+      next(error);
+    }
   }
 
   // create a new user
-  static create = async (req, res) => {
-    const validations = checkBodySchema({
-      name: {
-        ...shouldNotExist,
-      },
-      screenName: {
-        ...shouldExist,
-        ...shouldNotBeEmpty,
-      },
-      email: {
-        ...shouldExist,
-        ...shouldNotBeEmpty,
-        ...shouldBeEmail,
-        normalizeEmail: true,
-      },
-      password: {
-        ...shouldExist,
-        ...shouldNotBeEmpty,
-        ...shouldBeStrongPassword,
-      },
-    });
-
+  static create = async (req, res, next) => {
     try {
-      await runAllValidations(validations)(req);
-      validationResult(req).formatWith(errorFormatter).throw();
-    } catch (errors) {
-      const errorResponse = validationError(errors);
-      return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
-    }
+      const validations = checkBodySchema({
+        name: {
+          ...shouldNotExist,
+        },
+        screenName: {
+          ...shouldExist,
+          ...shouldNotBeEmpty,
+        },
+        email: {
+          ...shouldExist,
+          ...shouldNotBeEmpty,
+          ...shouldBeEmail,
+          normalizeEmail: true,
+        },
+        password: {
+          ...shouldExist,
+          ...shouldNotBeEmpty,
+          ...shouldBeStrongPassword,
+        },
+      });
 
-    const validatedUserData = matchedData(req);
-    const { screenName, email, password } = validatedUserData;
+      await runAllValidations(validations, req);
 
-    let user;
-
-    try {
-      user = await db.transaction((t) => (
+      const validatedUserData = matchedData(req);
+      const { screenName, email, password } = validatedUserData;
+      const user = await db.transaction((t) => (
         User.create({
           name: faker.random.alphaNumeric(15),
           screenName,
@@ -95,141 +70,94 @@ const UserController: Controller = class UserController {
           password,
         }, { transaction: t })
       ));
-    } catch (error) {
-      const errorResponse = internalServerError(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
-    }
+      const dataResponse = user.convert();
 
-    const dataResponse = user.convert();
-    return res.status(StatusCodes.CREATED).send(docWithData(dataResponse));
+      res.status(StatusCodes.CREATED).send(docWithData(dataResponse));
+    } catch (error) {
+      next(error);
+    }
   }
 
   // display a specific user
-  static show = async (req, res) => {
-    let result: ErrorObject | User;
-
+  static show = async (req, res, next) => {
     try {
-      result = await getUserById(req.params.id);
+      const user = await User.getById(req.params.id);
+      const dataResponse = user.convert();
+
+      res.send(docWithData(dataResponse));
     } catch (error) {
-      const errorResponse = internalServerError(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
+      next(error);
     }
-
-    if (!(result instanceof User)) {
-      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(result));
-    }
-
-    const user = result;
-
-    const dataResponse = user.convert();
-    return res.send(docWithData(dataResponse));
   }
 
   // update a specific user
-  static update = async (req, res) => {
-    const useValidators = useValidatorsSchema(req);
-    const useSanitizers = useSanitizersSchema(req);
-
-    let result: ErrorObject | User;
-
+  static update = async (req, res, next) => {
     try {
-      result = await getUserById(req.params.id);
-    } catch (error) {
-      const errorResponse = internalServerError(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
-    }
+      const useValidators = useValidatorsSchema(req);
+      const useSanitizers = useSanitizersSchema(req);
+      const validations = [
+        body('name')
+          .if(body('name').exists())
+          .custom(useValidators({
+            name: { ...shouldNotBeEmpty },
+          })),
+        body('screenName')
+          .if(body('screenName').exists())
+          .custom(useValidators({
+            screenName: { ...shouldNotBeEmpty },
+          })),
+        body('email')
+          .if(body('email').exists())
+          .custom(useValidators({
+            email: {
+              ...shouldNotBeEmpty,
+              ...shouldBeEmail,
+            },
+          }))
+          .customSanitizer(useSanitizers({
+            email: {
+              normalizeEmail: true,
+            },
+          })),
+        body('password')
+          .if(body('password').exists())
+          .custom(useValidators({
+            password: {
+              ...shouldNotBeEmpty,
+              ...shouldBeStrongPassword,
+            },
+          })),
+      ];
 
-    if (!(result instanceof User)) {
-      const errorResponse = result;
-      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(errorResponse));
-    }
+      const user = await User.getById(req.params.id);
 
-    const user = result;
+      await runAllValidations(validations, req);
 
-    const validations = [
-      body('name')
-        .if(body('name').exists())
-        .custom(useValidators({
-          name: { ...shouldNotBeEmpty },
-        })),
-      body('screenName')
-        .if(body('screenName').exists())
-        .custom(useValidators({
-          screenName: { ...shouldNotBeEmpty },
-        })),
-      body('email')
-        .if(body('email').exists())
-        .custom(useValidators({
-          email: {
-            ...shouldNotBeEmpty,
-            ...shouldBeEmail,
-          },
-        }))
-        .customSanitizer(useSanitizers({
-          email: {
-            normalizeEmail: true,
-          },
-        })),
-      body('password')
-        .if(body('password').exists())
-        .custom(useValidators({
-          password: {
-            ...shouldNotBeEmpty,
-            ...shouldBeStrongPassword,
-          },
-        })),
-    ];
+      const validatedUserData = matchedData(req);
 
-    try {
-      await runAllValidations(validations)(req);
-      validationResult(req).formatWith(errorFormatter).throw();
-    } catch (errors) {
-      const errorResponse = validationError(errors);
-      return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(docWithErrors(errorResponse));
-    }
-
-    const validatedUserData = matchedData(req);
-
-    try {
       await db.transaction((t) => user.update(validatedUserData, { transaction: t }));
-    } catch (error) {
-      const errorResponse = internalServerError(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
-    }
 
-    // Should refresh  user instance is created before updated, and sequelize
-    // might set with a different value according to setters.
-    const dataResponse = (await user.reload()).convert();
-    return res.send(docWithData(dataResponse));
+      // Should refresh user instance is created before updated, and sequelize
+      // might set with a different value according to setters.
+      const dataResponse = (await user.reload()).convert();
+
+      res.send(docWithData(dataResponse));
+    } catch (error) {
+      next(error);
+    }
   }
 
   // delete a specific user
-  static destroy = async (req, res) => {
-    let result: ErrorObject | User;
-
+  static destroy = async (req, res, next) => {
     try {
-      result = await getUserById(req.params.id);
-    } catch (error) {
-      const errorResponse = internalServerError(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
-    }
-
-    if (!(result instanceof User)) {
-      const errorResponse = result;
-      return res.status(StatusCodes.NOT_FOUND).send(docWithErrors(errorResponse));
-    }
-
-    const user = result;
-
-    try {
+      const user = await User.getById(req.params.id);
       await db.transaction((t) => user.destroy({ transaction: t }));
-    } catch (error) {
-      const errorResponse = internalServerError(error);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(docWithErrors(errorResponse));
-    }
+      const dataResponse = user.convert();
 
-    const dataResponse = user.convert();
-    return res.send(docWithData(dataResponse));
+      res.send(docWithData(dataResponse));
+    } catch (error) {
+      next(error);
+    }
   }
 };
 
