@@ -5,7 +5,7 @@ const config = require('../../config/config.js')[env];
 
 const options = (
   config.uri
-    ? [config.uri]
+    ? [config.uri, config]
     : [config.database, config.username, config.password, config]
 );
 

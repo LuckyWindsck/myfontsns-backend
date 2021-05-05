@@ -35,5 +35,10 @@ module.exports = {
     password,
     dialect,
     uri,
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
   },
 };
