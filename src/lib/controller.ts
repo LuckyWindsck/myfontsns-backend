@@ -22,7 +22,7 @@ export const resourceNotFound = () => {
 export const internalServerError = (error: any) => {
   const errorResponse: JSONAPI.ErrorObject = {
     title: 'Internal Server Error',
-    status: ReasonPhrases.NOT_FOUND,
+    status: ReasonPhrases.INTERNAL_SERVER_ERROR,
     meta: error,
   };
 
