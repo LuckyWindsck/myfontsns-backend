@@ -5,11 +5,11 @@ interface ServerOptions {
   port?: number | string
 }
 class Server {
-  public readonly app;
+  readonly app;
 
-  public readonly port: number | string;
+  readonly port: number | string;
 
-  public readonly db;
+  readonly db;
 
   constructor(option?: ServerOptions | undefined) {
     this.app = app;

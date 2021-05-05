@@ -4,9 +4,9 @@ import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 import type { APIErrorInterface } from './api-error';
 
 export default class ValidationError extends Error implements APIErrorInterface {
-  public readonly statusCode;
+  readonly statusCode;
 
-  public readonly errors;
+  readonly errors;
 
   constructor(errors: Result) {
     super();

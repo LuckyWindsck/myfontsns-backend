@@ -18,13 +18,13 @@ interface UserAttributes extends ModelAttributes {
 interface UserCreationAttributes extends Optional<UserAttributes, 'createdAt' | 'id' | 'updatedAt'> { }
 
 class User extends AppModel<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public name!: string;
+  name!: string;
 
-  public screenName!: string;
+  screenName!: string;
 
-  public email!: string;
+  email!: string;
 
-  public password!: string;
+  password!: string;
 
   static initialize(sequelize: Sequelize) {
     User.init(

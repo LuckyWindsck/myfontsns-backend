@@ -5,11 +5,11 @@ import { isSerializable } from '../helper';
 import type { APIErrorInterface } from './api-error';
 
 export default class InternalServerError extends Error implements APIErrorInterface {
-  public readonly statusCode;
+  readonly statusCode;
 
-  public readonly error;
+  readonly error;
 
-  public detail;
+  detail;
 
   constructor(error: any) {
     super();

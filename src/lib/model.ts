@@ -14,11 +14,11 @@ export class AppModel<
   TCreationAttributes extends {} = TModelAttributes
 > extends Model<TModelAttributes, TCreationAttributes>
   implements ModelAttributes {
-  public id!: number;
+  id!: number;
 
-  public readonly createdAt!: Date;
+  readonly createdAt!: Date;
 
-  public readonly updatedAt!: Date;
+  readonly updatedAt!: Date;
 
   convert() {
     const {

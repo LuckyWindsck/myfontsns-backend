@@ -3,7 +3,7 @@ import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 import type { APIErrorInterface } from './api-error';
 
 export default class ResourceNotFoundError extends Error implements APIErrorInterface {
-  public readonly statusCode;
+  readonly statusCode;
 
   constructor() {
     super();
