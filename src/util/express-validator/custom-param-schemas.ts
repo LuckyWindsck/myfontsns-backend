@@ -6,13 +6,6 @@ const shouldExist: ParamSchema = {
   },
 };
 
-const shouldNotExist: ParamSchema = {
-  exists: {
-    negated: true,
-    errorMessage: 'Should not exist',
-  },
-};
-
 const shouldNotBeEmpty: ParamSchema = {
   notEmpty: {
     errorMessage: 'Should not be empty',
@@ -33,7 +26,6 @@ const shouldBeStrongPassword: ParamSchema = {
 
 export {
   shouldExist,
-  shouldNotExist,
   shouldNotBeEmpty,
   shouldBeEmail,
   shouldBeStrongPassword,

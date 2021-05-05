@@ -1,6 +1,4 @@
 import { body, matchedData } from 'express-validator';
-// TODO: remove faker
-import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 
 import type { Controller } from '../lib/controller';
@@ -17,7 +15,6 @@ import {
   shouldBeStrongPassword,
   shouldExist,
   shouldNotBeEmpty,
-  shouldNotExist,
 } from '../util/express-validator/custom-param-schemas';
 import { docWithData } from '../util/json-api';
 
@@ -39,7 +36,8 @@ const UserController: Controller = class UserController {
     try {
       const validations = checkBodySchema({
         name: {
-          ...shouldNotExist,
+          ...shouldExist,
+          ...shouldNotBeEmpty,
         },
         screenName: {
           ...shouldExist,
@@ -61,13 +59,13 @@ const UserController: Controller = class UserController {
       await runAllValidations(validations, req);
 
       const validatedUserData = matchedData(req);
-      const { screenName, email, password } = validatedUserData;
+      const {
+        name, screenName, email, password,
+      } = validatedUserData;
+
       const user = await db.transaction((t) => (
         User.create({
-          name: faker.random.alphaNumeric(15),
-          screenName,
-          email,
-          password,
+          name, screenName, email, password,
         }, { transaction: t })
       ));
       const dataResponse = user.convert();

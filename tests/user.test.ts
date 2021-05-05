@@ -47,7 +47,7 @@ describe('Test /api/users', () => {
   });
 
   test('It should create a user', async () => {
-    const { name, ...fakeUser } = buildFakeUser();
+    const fakeUser = buildFakeUser();
     const { status, body: { data: responseUser } } = await request(app).post('/api/users').send(fakeUser);
     const createdUser = await User.findByPk(responseUser.id);
 
