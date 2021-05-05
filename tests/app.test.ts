@@ -1,6 +1,8 @@
 import request from 'supertest';
 
-import app from '../src/lib/app';
+import Server from '../src/server';
+
+const { app } = new Server();
 
 describe('Test the root path', () => {
   test('It should response the GET method', async () => {

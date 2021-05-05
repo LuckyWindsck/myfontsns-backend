@@ -2,9 +2,10 @@ import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 import request from 'supertest';
 
-import app from '../src/lib/app';
-import db from '../src/lib/db';
-import { User } from '../src/models';
+import Server from '../src/server';
+
+const { app, db } = new Server();
+const { User } = db.models;
 
 const buildFakeUser = () => ({
   name: faker.random.alphaNumeric(15),

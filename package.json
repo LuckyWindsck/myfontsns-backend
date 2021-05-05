@@ -1,15 +1,15 @@
 {
   "name": "myfontsns-backend",
   "version": "1.0.0",
-  "main": "src/server.ts",
+  "main": "src/index.ts",
   "repository": "https://github.com/LuckyWindsck/myfontsns-backend.git",
   "author": "LuckyWind_sck <luckywindsck@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only .",
     "build": "tsc",
-    "build:migrations": "tsc --outDir ./src/migrations/compiled ./src/migrations/*.ts",
+    "build:migrations": "tsc --outDir ./database/migrations/compiled ./database/migrations/*.ts",
     "lint": "eslint --ext=ts src tests bin",
     "lint:fix": "yarn lint --fix",
     "test": "jest",

@@ -1,6 +1,6 @@
 import db from '../lib/db';
 
-import User from './userModel';
+import User from './user-model';
 
 User.initialize(db);
 

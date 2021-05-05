@@ -1,24 +1,27 @@
 import { body, matchedData, validationResult } from 'express-validator';
+// TODO: remove faker
 import faker from 'faker';
 import { StatusCodes } from 'http-status-codes';
 import type { ErrorObject } from 'jsonapi-typescript';
 
 import type { Controller } from '../lib/controller';
-import { internalServerError, resourceNotFound } from '../lib/controller';
 import db from '../lib/db';
 import {
   checkBodySchema,
+  errorFormatter,
   runAllValidations,
+  useSanitizersSchema,
+  useValidatorsSchema,
+} from '../lib/express-validator';
+import {
   shouldBeEmail,
   shouldBeStrongPassword,
   shouldExist,
   shouldNotBeEmpty,
   shouldNotExist,
-  useSanitizersSchema,
-  useValidatorsSchema,
 } from '../lib/express-validator/custom-param-schemas';
-import { errorFormatter, validationError } from '../lib/express-validator/error-formatter';
-import { docWithData, docWithErrors } from '../lib/json-api/response';
+import { internalServerError, resourceNotFound, validationError } from '../lib/express/responses';
+import { docWithData, docWithErrors } from '../lib/json-api';
 import { User } from '../models';
 
 const getUserById = async (id: string) => {

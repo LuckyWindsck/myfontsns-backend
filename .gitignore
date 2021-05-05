@@ -1,9 +1,9 @@
 node_modules/
 
-dist/
-src/migrations/compiled/*
-
 .env
 
+database/migrations/compiled/*
 database/postgresql/*
 !database/postgresql/.gitkeep
+
+dist/
