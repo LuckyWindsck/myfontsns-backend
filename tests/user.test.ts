@@ -19,7 +19,7 @@ const omit = (obj: any, keys: string[]) => (
   Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)))
 );
 
-describe('Test /users', () => {
+describe('Test /api/users', () => {
   beforeAll(async () => {
     await db.sync({ force: true });
 
@@ -37,7 +37,7 @@ describe('Test /users', () => {
 
   test('It should display all users', async () => {
     const { count: userCount, rows: users } = await User.findAndCountAll();
-    const { status, body: { data: responseUsers } } = await request(app).get('/users');
+    const { status, body: { data: responseUsers } } = await request(app).get('/api/users');
 
     /* Response */
     // Should have status 200
@@ -52,7 +52,7 @@ describe('Test /users', () => {
 
   test('It should create a user', async () => {
     const { name, ...fakeUser } = buildFakeUser();
-    const { status, body: { data: responseUser } } = await request(app).post('/users').send(fakeUser);
+    const { status, body: { data: responseUser } } = await request(app).post('/api/users').send(fakeUser);
     const createdUser = await User.findByPk(responseUser.id);
 
     /* Database */
@@ -70,7 +70,7 @@ describe('Test /users', () => {
 
   test('It should be able to display a user', async () => {
     const user = await User.findOne({ order: db.random() });
-    const { status, body: { data: responseUser } } = await request(app).get(`/users/${user.id}`);
+    const { status, body: { data: responseUser } } = await request(app).get(`/api/users/${user.id}`);
 
     /* Response */
     // Should have status 200
@@ -82,7 +82,7 @@ describe('Test /users', () => {
   test('It should be able to update a user', async () => {
     const fakeUser = buildFakeUser();
     const user = await User.findOne({ order: db.random() });
-    const { status, body: { data: responseUser } } = await request(app).put(`/users/${user.id}`).send(fakeUser);
+    const { status, body: { data: responseUser } } = await request(app).put(`/api/users/${user.id}`).send(fakeUser);
     const updatedUser = await User.findByPk(user.id);
 
     /* Database */
@@ -98,7 +98,7 @@ describe('Test /users', () => {
 
   test('It should be able to delete a user', async () => {
     const user = await User.findOne({ order: db.random() });
-    const { status, body: { data: responseUser } } = await request(app).delete(`/users/${user.id}`);
+    const { status, body: { data: responseUser } } = await request(app).delete(`/api/users/${user.id}`);
     const deletedUser = await User.findByPk(user.id, { paranoid: false });
 
     /* Database */

@@ -1,7 +1,11 @@
-import RootRouter from './root-router';
-import UserRouter from './user-router';
+import * as express from 'express';
 
-export {
-  RootRouter,
-  UserRouter,
-};
+import APIRouter from './api-router';
+import RootRouter from './root-router';
+
+const Router = express.Router();
+
+Router.use('/', RootRouter);
+Router.use('/api', APIRouter);
+
+export default Router;
