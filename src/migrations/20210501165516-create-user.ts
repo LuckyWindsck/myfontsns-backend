@@ -1,8 +1,10 @@
-import * as SequelizeDefault from 'sequelize';
-import { QueryInterface } from 'sequelize';
+import type * as SequelizeDefault from 'sequelize';
 
 export default {
-  up: async (queryInterface: QueryInterface, Sequelize: typeof SequelizeDefault) => {
+  up: async (
+    queryInterface: SequelizeDefault.QueryInterface,
+    Sequelize: typeof SequelizeDefault,
+  ) => {
     await queryInterface.createTable('Users', {
       id: {
         allowNull: false,
@@ -32,7 +34,10 @@ export default {
       },
     });
   },
-  down: async (queryInterface: QueryInterface, _Sequelize: typeof SequelizeDefault) => {
+  down: async (
+    queryInterface: SequelizeDefault.QueryInterface,
+    _Sequelize: typeof SequelizeDefault,
+  ) => {
     await queryInterface.dropTable('Users');
   },
 };

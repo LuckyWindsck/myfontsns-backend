@@ -1,6 +1,6 @@
-import * as JSONAPI from 'jsonapi-typescript';
-import { RequestHandler } from 'express';
+import type { RequestHandler } from 'express';
 import { ReasonPhrases } from 'http-status-codes';
+import type * as JSONAPI from 'jsonapi-typescript';
 
 export interface Controller {
   index?: RequestHandler;
@@ -10,16 +10,16 @@ export interface Controller {
   destroy?: RequestHandler;
 }
 
-export function resourceNotFound() {
+export const resourceNotFound = () => {
   const errorResponse: JSONAPI.ErrorObject = {
     title: 'Resource not found',
     status: ReasonPhrases.NOT_FOUND,
   };
 
   return errorResponse;
-}
+};
 
-export function internalServerError(error: any) {
+export const internalServerError = (error: any) => {
   const errorResponse: JSONAPI.ErrorObject = {
     title: 'Internal Server Error',
     status: ReasonPhrases.NOT_FOUND,
@@ -27,4 +27,4 @@ export function internalServerError(error: any) {
   };
 
   return errorResponse;
-}
+};

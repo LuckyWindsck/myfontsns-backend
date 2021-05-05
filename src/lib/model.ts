@@ -1,4 +1,4 @@
-import * as JSONAPI from 'jsonapi-typescript';
+import type * as JSONAPI from 'jsonapi-typescript';
 import { Model } from 'sequelize';
 
 export interface ModelAttributes {

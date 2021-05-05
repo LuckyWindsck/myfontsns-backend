@@ -1,36 +1,24 @@
-import {
-  body,
-  matchedData,
-  validationResult,
-} from 'express-validator';
-import { StatusCodes } from 'http-status-codes';
+import { body, matchedData, validationResult } from 'express-validator';
 import faker from 'faker';
+import { StatusCodes } from 'http-status-codes';
+import type { ErrorObject } from 'jsonapi-typescript';
 
-import { ErrorObject } from 'jsonapi-typescript';
+import type { Controller } from '../lib/controller';
+import { internalServerError, resourceNotFound } from '../lib/controller';
 import db from '../lib/db';
 import {
-  Controller,
-  resourceNotFound,
-  internalServerError,
-} from '../lib/controller';
-import {
-  errorFormatter,
-  validationError,
-} from '../lib/express-validator/error-formatter';
-import {
-  shouldExist,
-  shouldNotExist,
-  shouldNotBeEmpty,
+  checkBodySchema,
+  runAllValidations,
   shouldBeEmail,
   shouldBeStrongPassword,
-
-  checkBodySchema,
-  useValidatorsSchema,
+  shouldExist,
+  shouldNotBeEmpty,
+  shouldNotExist,
   useSanitizersSchema,
-  runAllValidations,
+  useValidatorsSchema,
 } from '../lib/express-validator/custom-param-schemas';
+import { errorFormatter, validationError } from '../lib/express-validator/error-formatter';
 import { docWithData, docWithErrors } from '../lib/json-api/response';
-
 import { User } from '../models';
 
 const getUserById = async (id: string) => {

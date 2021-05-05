@@ -4,6 +4,7 @@
 // https://github.com/TypeStrong/ts-node/issues/245#issuecomment-785523446
 
 import repl from 'repl';
+
 import db from '../src/lib/db';
 import '../src/models';
 

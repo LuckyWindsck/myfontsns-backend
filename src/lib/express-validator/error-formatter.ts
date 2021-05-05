@@ -1,8 +1,8 @@
-import * as JSONAPI from 'jsonapi-typescript';
+import type { ErrorFormatter, Result } from 'express-validator';
 import { ReasonPhrases } from 'http-status-codes';
-import { ErrorFormatter, Result } from 'express-validator';
+import type * as JSONAPI from 'jsonapi-typescript';
 
-const errorFormatter: ErrorFormatter = ({
+export const errorFormatter: ErrorFormatter = ({
   location: _location,
   msg,
   param: _param,
@@ -10,7 +10,7 @@ const errorFormatter: ErrorFormatter = ({
   nestedErrors: _nestedErrors,
 }) => msg;
 
-const validationError = (errors: Result) => {
+export const validationError = (errors: Result) => {
   const errorResponse: JSONAPI.ErrorObject = {
     status: ReasonPhrases.UNPROCESSABLE_ENTITY,
     title: 'ValidationError',
@@ -18,9 +18,4 @@ const validationError = (errors: Result) => {
   };
 
   return errorResponse;
-};
-
-export {
-  errorFormatter,
-  validationError,
 };

@@ -10,7 +10,7 @@
     "dev": "ts-node-dev --respawn --transpile-only .",
     "build": "tsc",
     "build:migrations": "tsc --outDir ./src/migrations/compiled ./src/migrations/*.ts",
-    "lint": "eslint --ext=ts src",
+    "lint": "eslint --ext=ts src tests bin",
     "lint:fix": "yarn lint --fix",
     "test": "jest",
     "console:db": "node --experimental-repl-await --require ts-node/register/transpile-only ./bin/console-db.ts",

@@ -1,6 +1,8 @@
-import { Sequelize, Optional, DataTypes } from 'sequelize';
+import type { Optional, Sequelize } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
-import { ModelAttributes, AppModel } from '../lib/model';
+import type { ModelAttributes } from '../lib/model';
+import { AppModel } from '../lib/model';
 
 // TODO: Do we really need strict-typing-for-attributes?
 // https://sequelize.org/master/manual/typescript.html#usage-without-strict-types-for-attributes
@@ -13,7 +15,7 @@ interface UserAttributes extends ModelAttributes {
 }
 
 // Some attributes are optional in `User.build` and `User.create` calls
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt'> { }
+interface UserCreationAttributes extends Optional<UserAttributes, 'createdAt' | 'id' | 'updatedAt'> { }
 
 class User extends AppModel<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public name!: string;

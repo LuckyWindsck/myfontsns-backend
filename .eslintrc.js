@@ -15,6 +15,7 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'jest',
+    'import',
   ],
   settings: {
     'import/resolver': {
@@ -45,5 +46,17 @@ module.exports = {
     ],
     '@typescript-eslint/type-annotation-spacing': 'error',
     '@typescript-eslint/sort-type-union-intersection-members': 'error',
+    '@typescript-eslint/consistent-type-imports': 'error',
+    'import/order': [
+      'error',
+      {
+        alphabetize: { order: 'asc' },
+        'newlines-between': 'always',
+      },
+    ],
+    'sort-imports': [
+      'error',
+      { ignoreDeclarationSort: true },
+    ],
   },
 };

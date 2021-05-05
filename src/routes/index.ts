@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { apiResource } from '../lib/route';
-import { JSONAPIResponseInterceptor } from '../lib/json-api/response';
 import UserController from '../controllers/userController';
+import { JSONAPIResponseInterceptor } from '../lib/json-api/response';
+import { apiResource } from '../lib/route';
 
 const rootRouter = Router();
 const userRouter = Router();
