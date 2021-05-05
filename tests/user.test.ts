@@ -98,16 +98,16 @@ describe('Test /users', () => {
   test('It should be able to delete a user', async () => {
     const user = await User.findOne({ order: db.random() });
     const { status, body: { data: responseUser } } = await request(app).delete(`/users/${user.id}`);
-    const deletedUser = await User.findByPk(user.id);
+    const deletedUser = await User.findByPk(user.id, { paranoid: false });
 
     /* Database */
-    // Should delete user in database after DELETE request
-    expect(deletedUser).toBeNull();
+    // Should not be delete user in database after DELETE request
+    expect(deletedUser).not.toBeNull();
 
     /* Response */
     // Should have status 200
     expect(status).toBe(StatusCodes.OK);
     // Should respond with the user deleted
-    expect(responseUser.attributes).toMatchObject(omit(user.get(), ['id', 'createdAt', 'updatedAt']));
+    expect(responseUser.attributes).toMatchObject(omit(user.get(), ['id', 'createdAt', 'updatedAt', 'deletedAt']));
   });
 });

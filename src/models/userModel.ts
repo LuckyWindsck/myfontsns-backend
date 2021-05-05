@@ -52,6 +52,7 @@ class User extends AppModel<UserAttributes, UserCreationAttributes> implements U
         sequelize,
         modelName: 'User',
         tableName: 'Users',
+        paranoid: true,
       },
     );
   }
