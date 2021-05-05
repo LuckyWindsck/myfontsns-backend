@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import request from 'supertest';
 
 import Server from '../src/server';
+import { omit } from '../src/util/helper';
 
 const { app, db } = new Server();
 const { User } = db.models;
@@ -13,11 +14,6 @@ const buildFakeUser = () => ({
   email: faker.internet.email(),
   password: 'hN#u"[6?PPPN4V<',
 });
-
-const omit = (obj: any, keys: string[]) => (
-  // @ts-ignore
-  Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)))
-);
 
 describe('Test /api/users', () => {
   beforeAll(async () => {

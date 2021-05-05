@@ -1,15 +1,8 @@
 import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 
-import type { APIErrorInterface } from './api-error';
+import { isSerializable } from '../helper';
 
-const isSerializable = (value: any) => {
-  try {
-    JSON.parse(JSON.stringify(value));
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
+import type { APIErrorInterface } from './api-error';
 
 export default class InternalServerError extends Error implements APIErrorInterface {
   public readonly statusCode;
