@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { JSONAPIResponseInterceptor } from '../lib/json-api';
+import { JSONAPIResponseInterceptor } from '../util/json-api';
 
 import UserRouter from './user-router';
 

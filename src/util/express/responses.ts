@@ -13,8 +13,8 @@ const isSerializable = (value: any) => {
 
 export const resourceNotFound = () => {
   const errorResponse: JSONAPI.ErrorObject = {
-    title: 'Resource not found',
     status: ReasonPhrases.NOT_FOUND,
+    title: 'Resource not found',
   };
 
   return errorResponse;
@@ -34,8 +34,8 @@ More information about this error may be available in the server error log.`;
   }
 
   const errorResponse: JSONAPI.ErrorObject = {
-    title: 'Internal Server Error',
     status: ReasonPhrases.INTERNAL_SERVER_ERROR,
+    title: 'Internal Server Error',
     detail,
   };
 

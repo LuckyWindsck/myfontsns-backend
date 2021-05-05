@@ -11,7 +11,7 @@ class Server {
 
   public readonly db;
 
-  constructor(option?: ServerOptions) {
+  constructor(option?: ServerOptions | undefined) {
     this.app = app;
     this.db = db;
 

@@ -6,23 +6,23 @@ import type { ErrorObject } from 'jsonapi-typescript';
 
 import type { Controller } from '../lib/controller';
 import db from '../lib/db';
+import { User } from '../models';
 import {
   checkBodySchema,
   errorFormatter,
   runAllValidations,
   useSanitizersSchema,
   useValidatorsSchema,
-} from '../lib/express-validator';
+} from '../util/express-validator';
 import {
   shouldBeEmail,
   shouldBeStrongPassword,
   shouldExist,
   shouldNotBeEmpty,
   shouldNotExist,
-} from '../lib/express-validator/custom-param-schemas';
-import { internalServerError, resourceNotFound, validationError } from '../lib/express/responses';
-import { docWithData, docWithErrors } from '../lib/json-api';
-import { User } from '../models';
+} from '../util/express-validator/custom-param-schemas';
+import { internalServerError, resourceNotFound, validationError } from '../util/express/responses';
+import { docWithData, docWithErrors } from '../util/json-api';
 
 const getUserById = async (id: string) => {
   let result: ErrorObject | User | null = await User.findByPk(id);
