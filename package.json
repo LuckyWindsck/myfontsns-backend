@@ -10,6 +10,7 @@
     "dev": "ts-node-dev --respawn --transpile-only .",
     "build": "tsc",
     "build:migrations": "tsc --outDir ./database/migrations/compiled ./database/migrations/*.ts",
+    "build:seeders": "tsc --outDir ./database/seeders/compiled ./database/seeders/*.ts",
     "lint": "eslint --ext=ts src tests bin",
     "lint:fix": "yarn lint --fix",
     "test": "jest",

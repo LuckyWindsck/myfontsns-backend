@@ -8,6 +8,7 @@ import { omit } from '../src/util/helper';
 const { app, db } = new Server();
 const { User } = db.models;
 
+// TODO: Use User Factory
 const buildFakeUser = () => ({
   name: faker.random.alphaNumeric(15),
   screenName: faker.internet.userName(),
