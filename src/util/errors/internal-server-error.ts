@@ -33,7 +33,7 @@ export default class InternalServerError extends Error implements APIErrorInterf
     return {
       status: getReasonPhrase(this.statusCode),
       title: this.name,
-      detail: this.message,
+      detail: this.detail,
     };
   }
 }
