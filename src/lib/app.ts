@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 
 import Router from '../routes';
@@ -5,6 +6,8 @@ import errorHanlder from '../util/express/error-handler';
 
 const app = express();
 
+// TODO: Configurate cors
+app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
