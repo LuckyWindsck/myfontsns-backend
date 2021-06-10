@@ -3,13 +3,14 @@ import { StatusCodes } from 'http-status-codes';
 import type { ModelCtor } from 'sequelize';
 import request from 'supertest';
 
+import type SessionModel from '../src/models/session-model';
 import type UserModel from '../src/models/user-model';
 import Server from '../src/server';
 import { omit } from '../src/util/helper';
 
 const { app, db } = new Server();
 const User = db.models.User as ModelCtor<UserModel>;
-const { Session } = db.models;
+const Session = db.models.Session as ModelCtor<SessionModel>;
 
 // TODO: Use User Factory
 const buildFakeUser = () => ({

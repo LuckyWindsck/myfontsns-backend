@@ -23,7 +23,8 @@ const UserController: Controller = class UserController {
   static index = async (req, res, next) => {
     try {
       const users = await User.findAll();
-      const dataResponse = users.map((user) => user.convert());
+      // TODO: figure out why TS typing user as any
+      const dataResponse = users.map((user: User) => user.convert());
 
       res.send(docWithData(dataResponse));
     } catch (error) {

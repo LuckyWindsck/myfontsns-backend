@@ -3,6 +3,7 @@ import type { ErrorRequestHandler } from 'express';
 import {
   InternalServerError,
   ResourceNotFoundError,
+  UnauthorizedError,
   ValidationError,
 } from '../errors';
 import { docWithErrors } from '../json-api';
@@ -12,6 +13,7 @@ const errorHanlder: ErrorRequestHandler = (err, req, res, _next) => {
 
   const flag = [
     ResourceNotFoundError,
+    UnauthorizedError,
     ValidationError,
   ].some((constructor) => err instanceof constructor);
 

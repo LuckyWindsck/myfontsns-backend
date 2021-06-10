@@ -1,3 +1,6 @@
+import type { Express } from 'express';
+import type { Sequelize } from 'sequelize';
+
 import app from './lib/app';
 import db from './lib/db';
 
@@ -5,11 +8,11 @@ interface ServerOptions {
   port?: number | string
 }
 class Server {
-  readonly app;
+  readonly app: Express;
 
   readonly port: number | string;
 
-  readonly db;
+  readonly db: Sequelize;
 
   constructor(option?: ServerOptions | undefined) {
     this.app = app;

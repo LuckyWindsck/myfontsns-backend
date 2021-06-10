@@ -17,7 +17,9 @@ interface UserAttributes extends ModelAttributes {
 // Some attributes are optional in `User.build` and `User.create` calls
 interface UserCreationAttributes extends Optional<UserAttributes, 'createdAt' | 'id' | 'updatedAt'> { }
 
-class User extends AppModel<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User
+  extends AppModel<UserAttributes, UserCreationAttributes>
+  implements UserAttributes {
   name!: string;
 
   screenName!: string;
@@ -35,6 +37,7 @@ class User extends AppModel<UserAttributes, UserCreationAttributes> implements U
           primaryKey: true,
           type: DataTypes.INTEGER,
         },
+        // TODO: name should be unique
         name: DataTypes.STRING,
         screenName: DataTypes.STRING,
         email: DataTypes.STRING,

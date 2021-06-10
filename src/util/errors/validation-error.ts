@@ -11,7 +11,7 @@ export default class ValidationError extends Error implements APIErrorInterface 
   constructor(errors: Result) {
     super();
 
-    this.name = 'ValidationError';
+    this.name = 'Validation Error';
     this.statusCode = StatusCodes.UNPROCESSABLE_ENTITY;
 
     this.errors = errors;

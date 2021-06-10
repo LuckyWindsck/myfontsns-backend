@@ -11,3 +11,8 @@ export const omit = (obj: any, keys: string[]) => (
   // @ts-ignore
   Object.fromEntries(Object.entries(obj).filter(([k]) => !keys.includes(k)))
 );
+
+export const pick = (obj: any, keys: string[]) => (
+  // @ts-ignore
+  Object.fromEntries(Object.entries(obj).filter(([k]) => keys.includes(k)))
+);

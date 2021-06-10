@@ -2,14 +2,14 @@ import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 
 import type { APIErrorInterface } from './api-error';
 
-export default class ResourceNotFoundError extends Error implements APIErrorInterface {
+export default class UnauthorizedError extends Error implements APIErrorInterface {
   readonly statusCode;
 
   constructor() {
     super();
 
-    this.name = 'Resource Not Found Error';
-    this.statusCode = StatusCodes.NOT_FOUND;
+    this.name = 'Unauthorized Error';
+    this.statusCode = StatusCodes.UNAUTHORIZED;
   }
 
   toJSON() {

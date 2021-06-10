@@ -14,7 +14,7 @@ export default class InternalServerError extends Error implements APIErrorInterf
   constructor(error: any) {
     super();
 
-    this.name = 'InternalServerError';
+    this.name = 'Internal Server Error';
     this.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
 
     this.error = error;
