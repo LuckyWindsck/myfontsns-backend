@@ -23,8 +23,7 @@ const UserController: Controller = class UserController {
   static index = async (req, res, next) => {
     try {
       const users = await User.findAll();
-      // TODO: figure out why TS typing user as any
-      const dataResponse = users.map((user: User) => user.convert());
+      const dataResponse = users.map((user) => user.convert());
 
       res.send(docWithData(dataResponse));
     } catch (error) {
@@ -80,7 +79,7 @@ const UserController: Controller = class UserController {
   // display a specific user
   static show = async (req, res, next) => {
     try {
-      const user = await User.getById(req.params.id);
+      const user = await User.getById(req.params.userId);
       const dataResponse = user.convert();
 
       res.send(docWithData(dataResponse));
@@ -128,7 +127,7 @@ const UserController: Controller = class UserController {
           })),
       ];
 
-      const user = await User.getById(req.params.id);
+      const user = await User.getById(req.params.userId);
 
       await runAllValidations(validations, req);
 
@@ -149,7 +148,7 @@ const UserController: Controller = class UserController {
   // delete a specific user
   static destroy = async (req, res, next) => {
     try {
-      const user = await User.getById(req.params.id);
+      const user = await User.getById(req.params.userId);
       await db.transaction((t) => user.destroy({ transaction: t }));
       const dataResponse = user.convert();
 

@@ -1,8 +1,16 @@
-import type { Optional, Sequelize } from 'sequelize';
+import type {
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  Optional,
+  Sequelize,
+} from 'sequelize';
 import { DataTypes } from 'sequelize';
 
 import type { ModelAttributes } from '../lib/model';
 import { AppModel } from '../lib/model';
+
+import type Font from './font-model';
+import type Post from './post-model';
 
 // TODO: Do we really need strict-typing-for-attributes?
 // https://sequelize.org/master/manual/typescript.html#usage-without-strict-types-for-attributes
@@ -27,6 +35,17 @@ class User
   email!: string;
 
   password!: string;
+
+  // Since TS cannot determine model association at compile time
+  // we have to declare them here purely virtually
+  // these will not exist until `Model.init` was called.
+  getFonts!: HasManyGetAssociationsMixin<Font>;
+
+  createFont!: HasManyCreateAssociationMixin<Font>;
+
+  getPosts!: HasManyGetAssociationsMixin<Post>;
+
+  createPost!: HasManyCreateAssociationMixin<Post>;
 
   static initialize(sequelize: Sequelize) {
     User.init(
@@ -58,6 +77,10 @@ class User
         paranoid: true,
       },
     );
+  }
+
+  static async getById(id: string) {
+    return super.getById(id) as Promise<User>;
   }
 }
 
