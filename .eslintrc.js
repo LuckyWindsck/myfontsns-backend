@@ -38,6 +38,7 @@ module.exports = {
     'import/extensions': [
       'error',
       { ts: 'ignorePackages' },
+      { json: 'ignorePackages' },
     ],
     'newline-per-chained-call': 'off',
     'no-console': [

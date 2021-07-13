@@ -20,7 +20,7 @@ export default {
         type: Sequelize.INTEGER,
       },
       character: Sequelize.STRING,
-      data: Sequelize.STRING,
+      data: Sequelize.JSON,
       formatVersion: Sequelize.STRING,
       createdAt: {
         allowNull: false,

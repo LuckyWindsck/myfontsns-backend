@@ -2,8 +2,8 @@ node_modules/
 
 .env
 
-database/migrations/compiled/*
-database/seeders/compiled/*
+database/compiled/*
+
 database/postgresql/*
 !database/postgresql/.gitkeep
 

@@ -4,8 +4,8 @@ const path = require('path');
 module.exports = {
   // env: 'development',                                                        /* The environment to run the command in */
   config:            path.resolve('config', 'config.js'),                       /* The path to the config file */
-  'migrations-path': path.resolve('database', 'migrations/compiled'),           /* The path to the migrations folder */
-  'seeders-path':    path.resolve('database', 'seeders/compiled/seeders'),      /* The path to the seeders folder */
+  'migrations-path': path.resolve('database/compiled', 'migrations'),           /* The path to the migrations folder */
+  'seeders-path':    path.resolve('database/compiled', 'seeders'),              /* The path to the seeders folder */
   'models-path':     path.resolve('src', 'models'),                             /* The path to the models folder */
   // debug: false,                                                              /* When available show various debug information */
 };
