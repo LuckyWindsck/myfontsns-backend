@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { matchedData } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
@@ -30,8 +31,11 @@ const SessionController: Controller = class SessionController {
       const validatedUserData = matchedData(req);
       const { name, password } = validatedUserData;
 
-      const user = await User.findOne({ where: { name, password } });
+      const user = await User.findOne({ where: { name } });
       if (user === null) throw new UnauthorizedError();
+
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) throw new UnauthorizedError();
 
       const sid = uuidv4();
 

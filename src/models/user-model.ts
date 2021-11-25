@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import type {
   HasManyCreateAssociationMixin,
   HasManyGetAssociationsMixin,
@@ -15,6 +16,7 @@ import type Post from './post-model';
 // TODO: Do we really need strict-typing-for-attributes?
 // https://sequelize.org/master/manual/typescript.html#usage-without-strict-types-for-attributes
 
+const saltRounds = 10;
 interface UserAttributes extends ModelAttributes {
   name: string;
   screenName: string;
@@ -72,6 +74,16 @@ class User
       },
       {
         sequelize,
+        hooks: {
+          beforeCreate: async (user, _options) => {
+            const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+            Object.assign(user, { password: hashedPassword });
+          },
+          beforeUpdate: async (user, _options) => {
+            const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+            Object.assign(user, { password: hashedPassword });
+          },
+        },
         modelName: 'User',
         tableName: 'Users',
         paranoid: true,
